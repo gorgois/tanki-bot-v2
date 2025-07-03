@@ -1,5 +1,5 @@
 import discord
-from discord.ext import commands, tasks
+from discord.ext import commands
 import json
 import random
 import os
@@ -32,12 +32,6 @@ def get_rank(xp):
             return ranks[i][0], i
     return "Recruit", 0
 
-def get_next_xp(current_xp):
-    for rank, xp_needed in ranks:
-        if current_xp < xp_needed:
-            return xp_needed - current_xp
-    return 0
-
 @bot.event
 async def on_ready():
     print(f"Logged in as {bot.user}")
@@ -57,15 +51,13 @@ async def battle(ctx):
 
     rank_name, _ = get_rank(users[user_id]["xp"])
 
-    msg = f"🏆 You joined a battle!
-You earned **{earned_xp} XP** and **💎 {earned_crystals} crystals**.
-"
+    msg = f"""🏆 You joined a battle!
+You earned **{earned_xp} XP** and **💎 {earned_crystals} crystals**."""
     if goldbox:
-        msg += "🎉 You found a **GOLDBOX**! 🎁
-"
+        msg += "\n🎉 You found a **GOLDBOX**! 🎁"
         users[user_id]["crystals"] += 1000
 
-    msg += f"Your current rank is **{rank_name}**."
+    msg += f"\nYour current rank is **{rank_name}**."
 
     await ctx.send(msg)
     with open("users.json", "w") as f:
@@ -90,15 +82,11 @@ async def rank(ctx):
         bar = "[■■■■■■■■■■■■■■■■■■■■]"
         remaining = 0
 
-    await ctx.send(f"📊 **{ctx.author.name}'s Rank:** {rank_name}
-XP: {xp} | Crystals: 💎 {crystals}
-Progress: {bar} {remaining} XP to next rank")
+    await ctx.send(f"📊 **{ctx.author.name}'s Rank:** {rank_name}\nXP: {xp} | Crystals: 💎 {crystals}\nProgress: {bar} {remaining} XP to next rank")
 
 @bot.command()
 async def shop(ctx):
-    await ctx.send("🛒 **Shop:**
-- XP Pass (+2x XP for 1 minute): 1000 💎
-- XP Pass (+2x XP for 1 hour): 10000 💎")
+    await ctx.send("🛒 **Shop:**\n- XP Pass (+2x XP for 1 minute): 1000 💎\n- XP Pass (+2x XP for 1 hour): 10000 💎")
 
 @bot.command()
 async def hello(ctx):
@@ -106,8 +94,7 @@ async def hello(ctx):
 
 @bot.command()
 async def serverinfo(ctx):
-    await ctx.send(f"Server Name: {ctx.guild.name}
-Total Members: {ctx.guild.member_count}")
+    await ctx.send(f"Server Name: {ctx.guild.name}\nTotal Members: {ctx.guild.member_count}")
 
 @bot.command()
 async def avatar(ctx, member: discord.Member = None):
