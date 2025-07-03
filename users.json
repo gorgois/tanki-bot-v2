@@ -1,1 +1,9 @@
-{}
+{
+  "123456789012345678": {
+    "nickname": "PlayerOne",
+    "xp": 200,
+    "crystals": 50,
+    "pass_active": false,
+    "pass_expires": 0
+  }
+}
