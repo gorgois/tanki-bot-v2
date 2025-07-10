@@ -9,7 +9,7 @@ intents.message_content = True
 intents.members = True
 
 client = commands.Bot(command_prefix="!", intents=intents)
-tree = client.tree  # ✅ Fixed: use built-in tree
+tree = client.tree  # Use built-in CommandTree
 
 # Load config
 if os.path.exists("verification_config.json"):
@@ -23,14 +23,17 @@ def save_config():
     with open("verification_config.json", "w") as f:
         json.dump(config, f, indent=4)
 
-# Bot presence
 @client.event
 async def on_ready():
-    await tree.sync()
-    await client.change_presence(activity=discord.ActivityType=watching,name="verification"))
     print(f"Logged in as {client.user}")
+    await client.change_presence(
+        activity=discord.Activity(
+            type=discord.ActivityType.watching,
+            name="verification"
+        )
+    )
+    await tree.sync()
 
-# /enable-verification
 @tree.command(name="enable-verification", description="Enable verification system")
 @app_commands.checks.has_permissions(administrator=True)
 async def enable_verification(interaction: discord.Interaction):
@@ -39,7 +42,6 @@ async def enable_verification(interaction: discord.Interaction):
     save_config()
     await interaction.response.send_message("✅ Verification enabled.")
 
-# /disable-verification
 @tree.command(name="disable-verification", description="Disable verification system")
 @app_commands.checks.has_permissions(administrator=True)
 async def disable_verification(interaction: discord.Interaction):
@@ -50,7 +52,6 @@ async def disable_verification(interaction: discord.Interaction):
     else:
         await interaction.response.send_message("Verification was not set up.")
 
-# /verification-channel
 @tree.command(name="verification-channel", description="Set the verification channel")
 @app_commands.checks.has_permissions(administrator=True)
 async def verification_channel(interaction: discord.Interaction, channel: discord.TextChannel):
@@ -59,7 +60,6 @@ async def verification_channel(interaction: discord.Interaction, channel: discor
     save_config()
     await interaction.response.send_message(f"📢 Verification channel set to {channel.mention}.")
 
-# /verification-role
 @tree.command(name="verification-role", description="Set the role to give upon verification")
 @app_commands.checks.has_permissions(administrator=True)
 async def verification_role(interaction: discord.Interaction, role: discord.Role):
@@ -68,7 +68,6 @@ async def verification_role(interaction: discord.Interaction, role: discord.Role
     save_config()
     await interaction.response.send_message(f"🎭 Verification role set to `{role.name}`.")
 
-# /verification-reset
 @tree.command(name="verification-reset", description="Reset the verification system")
 @app_commands.checks.has_permissions(administrator=True)
 async def verification_reset(interaction: discord.Interaction):
@@ -79,13 +78,11 @@ async def verification_reset(interaction: discord.Interaction):
     else:
         await interaction.response.send_message("Verification is not set up.")
 
-# /start
 @tree.command(name="start", description="Check if the verification bot is running.")
 @app_commands.checks.has_permissions(administrator=True)
 async def start_command(interaction: discord.Interaction):
     await interaction.response.send_message("✅ I'm alive and ready to verify users!", ephemeral=True)
 
-# Listen for messages in verification channel
 @client.event
 async def on_message(message):
     if message.author.bot or not message.guild:
@@ -106,7 +103,7 @@ async def on_message(message):
 
     # Check for duplicate nickname
     for member in message.guild.members:
-        if member.nick == nickname:
+        if member.nick == nickname or member.name == nickname:
             await message.add_reaction("❌")
             return
 
@@ -121,5 +118,4 @@ async def on_message(message):
     except Exception as e:
         await message.channel.send(f"⚠️ An error occurred: {str(e)}")
 
-# Run the bot
 client.run(os.getenv("DISCORD_BOT_TOKEN"))
