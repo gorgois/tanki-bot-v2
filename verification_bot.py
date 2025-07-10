@@ -27,7 +27,7 @@ def save_config():
 @client.event
 async def on_ready():
     await tree.sync()
-    await client.change_presence(activity=discord.Activity(type=watching,name="verification"))
+    await client.change_presence(activity=discord.ActivityType=watching,name="verification"))
     print(f"Logged in as {client.user}")
 
 # /enable-verification
